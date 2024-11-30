@@ -7,6 +7,7 @@ package com.mycompany.dsafinal;
 import java.io.IOException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 /**
@@ -14,6 +15,56 @@ import org.jsoup.select.Elements;
  * @author My PC
  */
 public class WebsiteData {
+    
+    static String[][] getBossJob() throws IOException{
+         Document doc = Jsoup.connect("https://bossjob.ph/en-us/jobs-hiring/python-jobs?page=1&sort=1&salaryType=monthly").ignoreHttpErrors(true).timeout(5000).get();
+         Element jobs = doc.select("div._path__tableContainer__xxRhq").first();
+         Elements jobNames = jobs.select("div._path__title__iAn2G > p");
+         Elements postDate = null;
+         Elements shiftType = jobs.select("div._path__label__36X7S");
+         Elements jobTags = jobs.select("div._path__skills__QtaGs");
+         
+         //cant get the link because its stored in json
+         Elements links = null;
+         String[] url = null;
+         
+         //String elementText = jobs.text(); 
+         String[] jobNamesStr = new String[jobNames.size()];
+         for(int i = 0; i < jobNames.size(); i++){
+              jobNamesStr[i] = jobNames.get(i).text();
+          }
+         //website does not display the date of the jobposting on the search results
+         String[] postDateStr = null;
+         
+         //Stores shift types into a string array
+         String[] shiftTypeStr = new String[4];
+         int count = 0;
+         for(int i = 0; i < shiftType.size(); i++){
+             if(shiftType.get(i).text().equals("Full-time") || shiftType.get(i).text().equals("Part-time")){
+                shiftTypeStr[count] = shiftType.get(i).text(); 
+                count++;
+             }
+         }
+         // Stores job tags into a string array
+         String[] jobTagsStr = new String[jobTags.size()];
+         for(int i = 0; i < jobTags.size(); i++){
+             jobTagsStr[i] = jobTags.get(i).text();
+         }
+        
+         
+         // groups all the data together
+          String[][] returnData = new String[jobNamesStr.length][5];
+          for(int i = 0; i < jobNamesStr.length; i++){
+              String[] temp = {jobNamesStr[i], null, shiftTypeStr[i], jobTagsStr[i], null};
+              
+              returnData[i] = temp;
+          }
+          
+
+          return returnData;
+    }
+    
+    
     static String[][] getOnlineJobsPH(String keyword) throws IOException {
        Document doc = Jsoup.connect("https://www.onlinejobs.ph/jobseekers/jobsearch?jobkeyword=python&skill_tags=&gig=on&partTime=on&fullTime=on&isFromJobsearchForm=1").get();
           
@@ -24,10 +75,7 @@ public class WebsiteData {
           Elements shiftType = jobs.select("span.badge");
           Elements jobTags = jobs.select("div.job-tag");
           Elements[] jobTagsArr = new Elements[jobTags.size()]; 
-          
-          
-          
-          
+
           //Translates job names intro string and stored in array
           String[] jobNamesStr = new String[jobNames.size()];
           for(int i = 0; i < jobNames.size(); i++){
@@ -58,13 +106,14 @@ public class WebsiteData {
                   if(jobTagsArr[i].text().trim().isEmpty()){
                       tags = null;
                   } else{
-                    tags = tags + " , " + jobTagsArr[i].get(j).text();  
+                    tags = tags + jobTagsArr[i].get(j).text()  + " , ";  
                   }
                   
               }
               jobTagsStr[i] = tags;
           }
-          //gets lenks and translates into strings
+          
+          //gets links and translates into strings
           Elements links = doc.select("div.jobpost-cat-box > a");
           String[] url = new String[links.size()];
           for(int i = 0; i < links.size(); i++){
@@ -73,7 +122,15 @@ public class WebsiteData {
           }
           
 
-          String[][] returnData = {jobNamesStr, postDateStr, shiftTypeStr, jobTagsStr, url};
+          
+          // groups all the data together
+          String[][] returnData = new String[jobNamesStr.length][5];
+          for(int i = 0; i < jobNamesStr.length; i++){
+              String[] temp = {jobNamesStr[i], postDateStr[i], shiftTypeStr[i], jobTagsStr[i], url[i]};
+              
+              returnData[i] = temp;
+          }
+          
           return returnData;
       
     }

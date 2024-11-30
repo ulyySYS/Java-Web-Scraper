@@ -22,9 +22,11 @@ public class DSAFinal {
         System.out.println("Hello World!");
         try{
           WebsiteData.getOnlineJobsPH("python");  
+          WebsiteData.getBossJob();
         }
         catch(Exception e){
             System.out.println("error");
+            System.out.println(e);
         }
          
         
