@@ -22,7 +22,7 @@ import java.nio.file.Paths;
 public class DSAFinal {
 
     // Method to generate an Excel sheet from the job data
-    public static void generateExcelSheet(String[][] onlineJobsData, String[][] bossJobsData) throws IOException {
+    public static void generateExcelSheet(String[][] onlineJobsData, String[][] bossJobsData, String keyword) throws IOException {
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Job Data");
         int rowIndex = 0;
@@ -58,14 +58,14 @@ public class DSAFinal {
             row.createCell(5).setCellValue(job[4]);
         }
 
-        // Set the file path based on the operating system
+        // Set the file path dynamically based on the input keyword and OS
         String filePath;
         if (System.getProperty("os.name").toLowerCase().contains("mac")) {
             // macOS file path
-            filePath = Paths.get(System.getProperty("user.home"), "Documents", "JobData.xlsx").toString();
+            filePath = Paths.get(System.getProperty("user.home"), "Documents", "JobData for " + keyword + ".xlsx").toString();
         } else {
             // Windows OS file path
-            filePath = "C:\\Users\\GrantmyIdol\\Documents\\JobData.xlsx";
+            filePath = "C:\\Users\\GrantmyIdol\\Documents\\JobData for " + keyword + ".xlsx";
         }
 
         // Generate and save the excel sheet
@@ -78,24 +78,26 @@ public class DSAFinal {
     }
 
     public static void main(String[] args) {
-        try {
-            // Show input dialog for keyword
-            String keyword = JOptionPane.showInputDialog(null, "Enter a keyword to search for jobs:", "Job Search", JOptionPane.QUESTION_MESSAGE);
+        while (true) {
+            try {
+                // Show input dialog for keyword
+                String keyword = JOptionPane.showInputDialog(null, "Search for jobs:", "Job Search", JOptionPane.QUESTION_MESSAGE);
 
-            if (keyword == null || keyword.trim().isEmpty()) {
-                System.out.println("No keyword provided. Exiting program.");
-                return;
+                if (keyword == null || keyword.trim().isEmpty()) {
+                    System.out.println("No keyword provided. Exiting program.");
+                    return;
+                }
+
+                // Fetch data from both websites using the keyword
+                String[][] onlineJobsData = WebsiteData.getOnlineJobsPH(keyword);
+                String[][] bossJobsData = WebsiteData.getBossJob(keyword);
+
+                // Generate the Excel sheet
+                generateExcelSheet(onlineJobsData, bossJobsData, keyword);
+
+            } catch (Exception e) {
+                System.out.println("An error occurred: " + e.getMessage());
             }
-
-            // Fetch data from both websites using the keyword
-            String[][] onlineJobsData = WebsiteData.getOnlineJobsPH(keyword);
-            String[][] bossJobsData = WebsiteData.getBossJob(keyword);
-
-            // Generate the Excel sheet
-            generateExcelSheet(onlineJobsData, bossJobsData);
-
-        } catch (Exception e) {
-            System.out.println("An error occurred: " + e.getMessage());
         }
     }
 }
