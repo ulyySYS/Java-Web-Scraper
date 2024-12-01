@@ -15,9 +15,10 @@ import javax.swing.*;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.io.File;
 /**
  *
- * @author My PC
+ * 
  */
 public class DSAFinal {
 
@@ -64,8 +65,12 @@ public class DSAFinal {
             // macOS file path
             filePath = Paths.get(System.getProperty("user.home"), "Documents", "JobData for " + keyword + ".xlsx").toString();
         } else {
+//            String currentDir = System.getProperty("user.dir");
+
+            String userHome = System.getProperty("user.home");
+            String documentsPath = userHome + "\\Documents\\";
             // Windows OS file path
-            filePath = "C:\\Users\\GrantmyIdol\\Documents\\JobData for " + keyword + ".xlsx";
+            filePath = documentsPath + keyword + ".xlsx";
         }
 
         // Generate and save the excel sheet
@@ -81,7 +86,12 @@ public class DSAFinal {
         while (true) {
             try {
                 // Show input dialog for keyword
-                String keyword = JOptionPane.showInputDialog(null, "Search for jobs:", "Job Search", JOptionPane.QUESTION_MESSAGE);
+                String keyword = JOptionPane.showInputDialog(null, ""
+                        + "Submitted by: \n"
+                        + "Name: Ulysses Grant S. Audan(Developer), Mobile Number: +639457849133, Email: audanulysses320@gmail.com \n"
+                        + "Name: Ferdinand John F. Dobli(Developer), Mobile Number: +639321917366, Email: ferdinandjohndobli@gmail.com\n\n"
+                        
+                        + "Search for jobs:", "Job Search", JOptionPane.QUESTION_MESSAGE);
 
                 if (keyword == null || keyword.trim().isEmpty()) {
                     System.out.println("No keyword provided. Exiting program.");
